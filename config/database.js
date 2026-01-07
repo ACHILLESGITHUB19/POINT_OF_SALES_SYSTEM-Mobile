@@ -3,20 +3,31 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("MONGODB_URI not defined in .env");
-}
+// Use the environment variable
+const MONGO_URI = process.env.MONGODB_URI;
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log(`Mongodb Atlas has been Connected Successfully`);
+    if (!MONGO_URI) {
+      throw new Error("MONGODB_URI is not defined in environment variables");
+    }
+    
+    console.log("Connecting to MongoDB Atlas...");
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 10000, // Increased timeout for Atlas
+      socketTimeoutMS: 45000,
+    }); 
+    
+    console.log(" MongoDB Atlas connected successfully");
+    console.log(`Database: ${mongoose.connection.db.databaseName}`);
+    console.log(`Host: ${mongoose.connection.host}`);
+    
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
-    process.exit(1);
+    console.error("Connection string:", MONGO_URI ? "***[HIDDEN]***" : "Not defined");
+    process.exit(1); 
   }
 };
-
 
 const userSchema = new mongoose.Schema(
   {
