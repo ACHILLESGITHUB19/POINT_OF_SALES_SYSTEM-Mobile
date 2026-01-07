@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/staff.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>Staff Dashboard</title>
+</head>
+<body>
+
+<nav class="header-navbar">
+  <div class="brandname">
+    <div class="logo">
+      <img src="/logo.png" alt="Logo" class="logo-img">
+    </div>
+    <h2>G'ray Countryside Cafe Est.2018</h2>
+    
+    <div class="Contacts"><h6>Contact Number: 0997-4600154</h6></div>
+    </div>
+
+     <div class="logout-btn">
+    <a href="/logout"><button>Logout</button></a>
+  </div>
+</nav>
+
+<div class="staffdashboard">
+  <div class="dashboard">
+
+    <div class="sidebar">
+      <h2>Category</h2>
+      <br>
+
+      <button class="category-btn active" id="category1" data-category="all">All Products</button>
+      <br>
+      <button class="category-btn" id="category2" data-category="Rice">Rice Bowl Meals</button>
+      <br>
+      <button class="category-btn" id="category3" data-category="Sizzling">Hot Sizzlers</button>
+      <br>
+      <button class="category-btn" id="category4" data-category="Party">Party Tray</button>
+      <br>
+      <button class="category-btn" id="category5" data-category="Drink">Drinks</button>
+      <br>
+      <button class="category-btn" id="category6" data-category="Cafe">Coffee</button>
+      <br>
+      <button class="category-btn" id="category7" data-category="Milk">Milk Tea</button>
+      <br>
+      <button class="category-btn" id="category8" data-category="Frappe">Frappe</button>
+      <br>
+      <button class="category-btn" id="category9" data-category="Snack & Appetizer">Snacks & Appetizer</button>
+      <br>
+      <button class="category-btn" id="category10" data-category="Budget Meals Served with Rice">Budget Meals Served with Rice</button>
+      <br>
+      <button class="category-btn" id="category11" data-category="Specialties">Specialties</button>
+
+      <footer>&copy; 2026 For School Purposes Only. All rights reserved.</footer>
+    </div>
+
+    <div class="center"> 
+      <input type="text" class="search" placeholder="Search Menu" onkeyup="searchFood(this.value)">
+      <div id="menuContainer" class="menu-grid">
+      </div>
+    </div>
+
+    <!-- CART -->
+<div class="product">
+  <h3>Products</h3>
+ 
+  <p>Order Type: <span id="orderTypeDisplay">None</span></p>
+  <ul id="productlist"></ul>
+
+
+
+
+  <div class="totals">
+  <p>Subtotal: ₱<span id="subtotal">0.00</span></p>
+  <p>Tax (10%): ₱<span id="tax">0.00</span></p>
+  <h3>Total Cash: ₱<span id="totals">0.00</span></h3>
+  </div>
+  
+  <div class="payment-section">
+  <div class="order-type-row">
+    <button class="dineinandtakeout-btn" Onclick="setDineIn()">Dine In</button>
+    <button class="dineinandtakeout-btn" Onclick="setTakeout()">Take Out</button>
+  </div>
+   <button class="pay-btn" onclick="Payment()">Pay</button>
+</div>
+ 
+</div>
+<div id="receipt" style="display: none;">
+  <div style="text-align: center; margin-bottom: 15px;">
+    <h2>G'RAY COUNTRYSIDE CAFE</h2>
+    <p>Est. 2018</p>
+    <p>Contact: (XXX) XXX-XXXX</p>
+    <div class="separator"></div>
+  </div>
+  
+  <p style="text-align: center;"><strong>ORDER RECEIPT</strong></p>
+  <p id="receiptOrderType" style="text-align: center;">[Order Type]</p>
+  <p id="receiptDateTime" style="text-align: center;">[Date/Time]</p>
+  <div class="separator"></div>
+  
+  <table id="receiptTable">
+    <thead>
+      <tr>
+        <th style="display: none;">Item</th>
+        <th style="display: none;">Qty</th>
+        <th style="display: none;">Price</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  
+  <div class="separator"></div>
+  
+  <div class="totals-section">
+    <p>
+      <span>Subtotal:</span>
+      <span>₱<span id="receiptSubtotal">0.00</span></span>
+    </p>
+    <p>
+      <span>Tax (10%):</span>
+      <span>₱<span id="receiptTax">0.00</span></span>
+    </p>
+    <h3>
+      <span>TOTAL:</span>
+      <span>₱<span id="receiptTotal">0.00</span></span>
+    </h3>
+  </div>
+  <div class="receipt-footer">
+    <p><strong>Thank you for your order!</strong></p>
+    <p>Please come again</p>
+    <p>*** For school purposes only ***</p>
+    <p>Receipt ID: <span id="receiptId">[ID]</span></p>
+  </div>
+</div>
+
+<script>
+let currentOrder = [];
+let orderType = null;
+let currentCategory = 'all';
+const productCatalog = [
+  // Rice Bowl Meals
+  { name: 'Korean Spicy Bulgogi (Pork)', price: 158, category: 'Rice', image: 'korean_spicy_bulgogi.png' },
+  { name: 'Korean Salt and Pepper (Pork)', price: 158, category: 'Rice', image: 'korean_salt_pepper_pork.png' },
+  { name: 'Crispy Pork Lechon Kawali', price: 158, category: 'Rice', image: 'lechon_kawali.png' },
+  { name: 'Cream Dory Fish Fillet', price: 138, category: 'Rice', image: 'cream_dory.png' },
+  { name: 'Buttered Honey Chicken', price: 128, category: 'Rice', image: 'buttered_honey_chicken.png' },
+  { name: 'Buttered Spicy Chicken', price: 128, category: 'Rice', image: 'buttered_spicy_chicken.png' },
+  { name: 'Chicken Adobo', price: 128, category: 'Rice', image: 'chicken_adobo.png' },
+  { name: 'Pork Shanghai', price: 128, category: 'Rice', image: 'pork_shanghai.png' },
+
+  // Hot Sizzlers
+  { name: 'Sizzling Pork Sisig', price: 168, category: 'Sizzling', image: 'pork_sisig.png' },
+  { name: 'Sizzling Liempo', price: 168, category: 'Sizzling', image: 'liempo.png' },
+  { name: 'Sizzling Porkchop', price: 148, category: 'Sizzling', image: 'porkchop.png' },
+  { name: 'Sizzling Fried Chicken', price: 148, category: 'Sizzling', image: 'fried_chicken.png' },
+
+  // Party Tray
+  { name: 'Pancit Bihon (S)', price: 300, category: 'Party', image: 'pancit_bihon_small.png' },
+  { name: 'Pancit Bihon (M)', price: 500, category: 'Party', image: 'pancit_bihon_medium.png' },
+  { name: 'Pancit Bihon (L)', price: 700, category: 'Party', image: 'pancit_bihon_large.png' },
+  { name: 'Pancit Canton (S)', price: 300, category: 'Party', image: 'pancit_canton_small.png' },
+  { name: 'Pancit Canton (M)', price: 500, category: 'Party', image: 'pancit_canton_medium.png' },
+  { name: 'Pancit Canton (L)', price: 700, category: 'Party', image: 'pancit_canton_large.png' },
+  { name: 'Spaghetti (S)', price: 400, category: 'Party', image: 'spaghetti_small.png' },
+  { name: 'Spaghetti (M)', price: 700, category: 'Party', image: 'spaghetti_medium.png' },
+  { name: 'Spaghetti (L)', price: 1000, category: 'Party', image: 'spaghetti_large.png' },
+
+  // Drinks
+  { name: 'Cucumber Lemonade (Glass)', price: 38, category: 'Drink', image: 'cucumber_lemonade.png' },
+  { name: 'Cucumber Lemonade (Pitcher)', price: 108, category: 'Drink', image: 'cucumber_lemonade_pitcher.png' },
+  { name: 'Blue Lemonade (Glass)', price: 38, category: 'Drink', image: 'blue_lemonade.png' },
+  { name: 'Blue Lemonade (Pitcher)', price: 108, category: 'Drink', image: 'blue_lemonade_pitcher.png' },
+  { name: 'Red Tea (Glass)', price: 38, category: 'Drink', image: 'red_tea.png' },
+  { name: 'Soda (Mismo)', price: 28, category: 'Drink', image: 'soda_mismo.png' },
+  { name: 'Soda 1.5L', price: 118, category: 'Drink', image: 'soda_1.5liter.png' },
+
+  // Coffee
+  { name: 'Cafe Americano Tall', price: 88, category: 'Cafe', image: 'cafe_americano_tall.png' },
+  { name: 'Cafe Americano Grande', price: 108, category: 'Cafe', image: 'cafe_americano_grande.png' },
+  { name: 'Cafe Latte Tall', price: 108, category: 'Cafe', image: 'cafe_latte_tall.png' },
+  { name: 'Cafe Latte Grande', price: 128, category: 'Cafe', image: 'cafe_latte_grande.png' },
+  { name: 'Caramel Macchiato Tall', price: 108, category: 'Cafe', image: 'caramel_macchiato_tall.png' },
+  { name: 'Caramel Macchiato Grande', price: 128, category: 'Cafe', image: 'caramel_macchiato_grande.png' },
+
+  // Milk Tea
+  { name: 'Milk Tea Regular HC', price: 68, category: 'Milk', image: 'Milktea_regular.png' },
+  { name: 'Milk Tea Regular MC', price: 88, category: 'Milk', image: 'Milktea_regular_MC.png' },
+  { name: 'Matcha Green Tea HC', price: 78, category: 'Milk', image: 'Matcha_greentea_HC.png' },
+  { name: 'Matcha Green Tea MC', price: 88, category: 'Milk', image: 'Matcha_greentea_MC.png' },
+
+  // Frappe
+  { name: 'Matcha Green Tea HC', price: 108, category: 'Frappe', image: 'Matcha_greentea_HC.png' },
+  { name: 'Matcha Green Tea MC', price: 138, category: 'Frappe', image: 'Matcha_greentea_HC.png' },
+  { name: 'Cookies & Cream HC', price: 98, category: 'Frappe', image: 'Cookies_&Cream_HC.png' },
+  { name: 'Cookies & Cream MC', price: 128, category: 'Frappe', image: 'Cookies_&Cream_HC.png' },
+  { name: 'Strawberry & Cream HC', price: 180, category: 'Frappe', image: 'Strawberr_Cream_frappe_HC.png'},
+  { name: 'Mango cheese cake HC', price: 180, category: 'Frappe', image: 'Mango_cheesecake_HC.png'},
+ 
+  // Snacks & Appetizer
+  { name: 'Cheesy Nachos', price: 88, category: 'Snack & Appetizer', image: 'cheesy_nachos.png' },
+  { name: 'Nachos Supreme', price: 108, category: 'Snack & Appetizer', image: 'nachos_supreme.png' },
+  { name: 'French fries', price: 58, category: 'Snack & Appetizer', image: 'french_fries.png' },
+  { name: 'Clubhouse Sandwich', price: 118, category: 'Snack & Appetizer', image: 'club_house_sandwich.png' },
+  { name: 'Fish and Fries', price: 128, category: 'Snack & Appetizer', image: 'fish_fries.png' },
+  { name: 'Cheesy Dynamite Lumpia', price: 88, category: 'Snack & Appetizer', image: 'Cheesy_dynamite.png' },
+  { name: 'Lumpiang Shanghai', price: 88, category: 'Snack & Appetizer', image: 'lumpiang_shanghai.png' },
+
+  // Budget Meals served with Rice
+  { name: 'Fried Chicken', price: 78, category: 'Budget Meals Served with Rice', image: 'fried_chicken_Meal.png' },
+  { name: 'Buttered Honey Chicken', price: 78, category: 'Budget Meals Served with Rice', image: 'buttered_honey_chicken.png' },
+  { name: 'Buttered Spicy Chicken', price: 78, category: 'Budget Meals Served with Rice', image: 'buttered_spicy_chicken.png' },
+  { name: 'Tinapa Rice', price: 108, category: 'Budget Meals Served with Rice', image: 'Tinapa_fried_rice.png' },
+  { name: 'Tuyo Pesto', price: 108, category: 'Budget Meals Served with Rice', image: 'Tuyo_pesto.png' },
+  { name: 'Fried Rice', price: 128, category: 'Budget Meals Served with Rice', image: 'fried_rice.png' },
+  { name: 'Plain Rice', price: 18, category: 'Budget Meals Served with Rice', image: 'plain_rice.png' },
+
+  // Specialties
+  { name: 'Sinigang (PORK)', price: 188, category: 'Specialties', image: 'sinigang_pork.png' },
+  { name: 'Sinigang (Shrimp)', price: 178, category: 'Specialties', image: 'sinigang_shrimp.png' },
+  { name: 'Paknet (Pakbet w/ Bagnet)', price: 188, category: 'Specialties', image: 'paknet.png' },
+  { name: 'Buttered Shrimp', price: 108, category: 'Specialties', image: 'buttered_shrimp.png' },
+  { name: 'Special Bulalo (good for 2-3 Persons)', price: 128, category: 'Specialties', image: 'Special_Bulalo.png' },
+  { name: 'Special Bulalo Buy 1 Take 1 (good for 6-8 Persons)', price: 18, category: 'Specialties', image: 'Special_Bulalo_buy1_take1.png' }
+];
+
+// MAIN RENDER FUNCTION - FIXED
+function renderMenu() {
+  const container = document.getElementById('menuContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  const filteredProducts = currentCategory === 'all'
+    ? productCatalog
+    : productCatalog.filter(item => item.category === currentCategory);
+  
+  if (filteredProducts.length === 0) {
+    container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">No items available</p>';
+    return;
+  }
+  
+  // Create compact product cards in grid
+  filteredProducts.forEach(product => {
+    const productCard = document.createElement('div');
+    productCard.className = 'compact-product-card';
+    
+    // Create image
+    const img = document.createElement('img');
+    img.src = `/images/${product.image}`;
+    img.alt = product.name;
+    img.onerror = function() {
+      this.src = '/images';
+      this.onerror = null; // Prevent infinite loop
+    };
+    
+    // Create product name
+    const name = document.createElement('div');
+    name.className = 'compact-product-name';
+    name.textContent = product.name;
+    
+    // Create price
+    const price = document.createElement('div');
+    price.className = 'compact-product-price';
+    price.textContent = `₱${product.price}`;
+    
+    // Add click event
+    productCard.onclick = () => addItemToOrder(product.name, product.price);
+    
+    // Append elements
+    productCard.appendChild(img);
+    productCard.appendChild(name);
+    productCard.appendChild(price);
+    
+    container.appendChild(productCard);
+  });
+}
+
+function initCategoryButtons() {
+  const buttons = document.querySelectorAll('.category-btn');
+  buttons.forEach(btn => {
+    btn.onclick = function() {
+      const category = this.getAttribute('data-category');
+      filterCategory(category);
+    };
+  });
+}
+
+function filterCategory(category) {
+  currentCategory = category;
+  
+  const buttons = document.querySelectorAll('.category-btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  const activeBtn = document.querySelector(`[data-category="${category}"]`);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+  }
+  
+  renderMenu();
+}
+
+function searchFood(value) {
+  value = value.toLowerCase().trim();
+  
+  const productCards = document.querySelectorAll('#menuContainer .compact-product-card');
+  
+  productCards.forEach(card => {
+    const itemText = card.textContent.toLowerCase();
+    card.style.display = itemText.includes(value) ? '' : 'none';
+  });
+}
+
+function addItemToOrder(name, price) {
+  const existingItem = currentOrder.find(item => item.name === name);
+  
+  if (existingItem) {
+    existingItem.quantity++;
+  } else {
+    currentOrder.push({ 
+      name: name, 
+      price: price, 
+      quantity: 1 
+    });
+  }
+  
+  renderOrder();
+}
+
+function removeItemFromOrder(index) {
+  if (currentOrder[index].quantity > 1) {
+    currentOrder[index].quantity--;
+  } else {
+    currentOrder.splice(index, 1);
+  }
+  
+  renderOrder();
+}
+
+function renderOrder() {
+  const list = document.getElementById('productlist');
+  const subtotalEl = document.getElementById('subtotal');
+  const taxEl = document.getElementById('tax');
+  const totalEl = document.getElementById('totals');
+  
+  if (!list || !subtotalEl || !taxEl || !totalEl) return;
+  
+  list.innerHTML = '';
+  
+  let subtotal = 0;
+  
+  currentOrder.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    subtotal += itemTotal;
+    
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${item.name} x${item.quantity}</span>
+      <span>₱${itemTotal.toFixed(2)}</span>
+      <button onclick="removeItemFromOrder(${index})" class="remove-btn">✕</button>
+    `;
+    list.appendChild(li);
+  });
+  
+  const tax = subtotal * 0.10;
+  const total = subtotal + tax;
+  
+  subtotalEl.textContent = subtotal.toFixed(2);
+  taxEl.textContent = tax.toFixed(2);
+  totalEl.textContent = total.toFixed(2);
+}
+
+function setDineIn() {
+  orderType = "Dine In";
+  document.getElementById("orderTypeDisplay").textContent = orderType;
+}
+
+function setTakeout() {
+  orderType = "Take Out";
+  document.getElementById("orderTypeDisplay").textContent = orderType;
+}
+
+function Payment() {
+  if (!currentOrder.length) { 
+    return; 
+  }
+  if (!orderType) {
+    alert('Please select order type (Dine In or Take Out)!');
+    return;
+  }
+
+  const orderItems = currentOrder.map(item => ({
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity
+  }));
+
+  const subtotal = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const tax = parseFloat((subtotal * 0.10).toFixed(2));
+  const total = parseFloat((subtotal + tax).toFixed(2));
+
+  const orderData = {
+    items: orderItems,
+    subtotal: subtotal,
+    tax: tax,
+    total: total,
+    type: orderType,
+    customer: {
+      name: "Guest",
+      phone: "N/A"
+    }
+  };
+
+  // Disable button during processing
+  const payBtn = document.querySelector('.pay-btn');
+  payBtn.disabled = true;
+  payBtn.textContent = "Processing...";
+
+  fetch('/api/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(orderData)
+  })
+  .then(response => response.json())
+  .then(result => {
+    // Re-enable button first
+    payBtn.disabled = false;
+    payBtn.textContent = "Pay";
+
+    if (result.success) {
+      const confirmPrint = confirm('Order submitted successfully! Print receipt?');
+      if (confirmPrint) {
+        printReceipt();
+      }
+      
+      currentOrder = [];
+      orderType = null;
+      renderOrder();
+      document.getElementById("orderTypeDisplay").textContent = "None";
+      
+      alert('Payment processed successfully!');
+    } else {
+      console.error('Order failed:', result.message);
+      alert('Order failed: ' + result.message);
+    }
+  })
+  .catch(error => {
+    // Re-enable button on error
+    payBtn.disabled = false;
+    payBtn.textContent = "Pay";
+    
+    console.error('Error:', error);
+    alert('Error processing payment. Please try again.');
+  });
+}
+
+function printReceipt() {
+  return new Promise((resolve, reject) => {
+    if (!currentOrder.length) {
+      alert('No items in order!');
+      return;
+    }
+    
+    if (!orderType) {
+      alert('Please select order type!');
+      return;
+    }
+
+    let subtotal = 0;
+    const itemsHtml = currentOrder.map(item => {
+      const itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+      const name = item.name.length > 24 ? 
+        `${item.name.substring(0, 22)}...` : item.name;
+      
+      return `
+        <tr>
+          <td style="text-align: left; padding: 2px 0; font-size: 10px; max-width: 140px; word-wrap: break-word;">
+            ${name}
+          </td>
+          <td style="text-align: center; padding: 2px 0; font-size: 10px; font-weight: bold; width: 20px;">
+            x${item.quantity}
+          </td>
+          <td style="text-align: right; padding: 2px 0; font-size: 10px; width: 60px;">
+            ₱${itemTotal.toFixed(2)}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    const tax = parseFloat((subtotal * 0.10).toFixed(2));
+    const total = parseFloat((subtotal + tax).toFixed(2));
+
+    const receiptId = 'RCPT' + Date.now().toString().slice(-6);
+    
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-PH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString('en-PH', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const printWindow = window.open('', '_blank', 'width=350,height=600');
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Receipt</title>
+        <meta charset="UTF-8">
+        <style>
+          @page {
+            size: 80mm auto;
+            margin: 0;
+            margin-top: 5mm;
+            margin-bottom: 5mm;
+          }
+          
+          @media print {
+            html, body {
+              width: 80mm !important;
+              min-width: 80mm !important;
+              max-width: 80mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              overflow: hidden !important;
+            }
+            
+            body {
+              font-size: 10px !important;
+              line-height: 1 !important;
+            }
+            
+            .no-print {
+              display: none !important;
+            }
+            
+            .receipt-container {
+              page-break-inside: avoid;
+              page-break-after: avoid;
+              page-break-before: avoid;
+            }
+          }
+          
+          body {
+            font-family: 'Courier New', monospace, monospace;
+            font-size: 10px;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+            width: 80mm;
+            min-width: 80mm;
+            max-width: 80mm;
+            background: white;
+            color: black;
+          }
+          
+          .receipt-container {
+            width: 80mm;
+            min-width: 80mm;
+            max-width: 80mm;
+            padding: 5mm;
+            box-sizing: border-box;
+            margin: 0 auto;
+            background: white;
+          }
+          
+          .header {
+            text-align: center;
+            margin-bottom: 3mm;
+          }
+          
+          .shop-name {
+            font-size: 11px;
+            font-weight: bold;
+            margin: 1mm 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          
+          .shop-details {
+            font-size: 9px;
+            margin: 0.5mm 0;
+            line-height: 1.1;
+          }
+          
+          .separator {
+            border-top: 1px dashed #000;
+            margin: 2mm 0;
+            width: 100%;
+          }
+          
+          .order-info {
+            text-align: center;
+            margin: 2mm 0;
+          }
+          
+          .receipt-title {
+            font-size: 10px;
+            font-weight: bold;
+            margin: 1mm 0;
+            text-transform: uppercase;
+          }
+          
+          .order-details {
+            font-size: 9px;
+            margin: 0.5mm 0;
+            line-height: 1.1;
+          }
+          
+          .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2mm 0;
+            table-layout: fixed;
+          }
+          
+          .items-table td {
+            padding: 1px 0;
+            vertical-align: top;
+            line-height: 1.1;
+          }
+          
+          .item-name-col {
+            width: 45mm;
+            max-width: 45mm;
+            text-align: left;
+            word-wrap: break-word;
+            font-size: 9px;
+          }
+          
+          .item-qty-col {
+            width: 8mm;
+            text-align: center;
+            font-weight: bold;
+            font-size: 9px;
+          }
+          
+          .item-price-col {
+            width: 17mm;
+            text-align: right;
+            font-size: 9px;
+          }
+          
+          .totals-section {
+            margin-top: 3mm;
+          }
+          
+          .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5mm 0;
+            font-size: 9px;
+          }
+          
+          .grand-total {
+            display: flex;
+            justify-content: space-between;
+            margin: 1mm 0;
+            padding-top: 1mm;
+            border-top: 2px solid #000;
+            font-size: 11px;
+            font-weight: bold;
+          }
+          
+          .footer {
+            text-align: center;
+            margin-top: 3mm;
+            font-size: 8px;
+            border-top: 1px dashed #000;
+            padding-top: 2mm;
+            line-height: 1.1;
+          }
+          
+          .thank-you {
+            font-weight: bold;
+            margin: 1mm 0;
+          }
+          
+          .footer-text {
+            margin: 0.5mm 0;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt-container">
+          <div class="header">
+            <div class="shop-name">G'RAY COUNTRYSIDE CAFE</div>
+            <div class="shop-details">Est. 2018</div>
+            <div class="shop-details">Contact: 0997-4600154</div>
+            <div class="separator"></div>
+          </div>
+          
+          <div class="order-info">
+            <div class="receipt-title">order receipt</div>
+            <div class="order-details">Type: ${orderType}</div>
+            <div class="order-details">${dateStr} ${timeStr}</div>
+            <div class="order-details">ID: ${receiptId}</div>
+            <div class="separator"></div>
+          </div>
+          
+          <table class="items-table">
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          
+          <div class="separator"></div>
+          
+          <div class="totals-section">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>₱${subtotal.toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+              <span>Tax (10%):</span>
+              <span>₱${tax.toFixed(2)}</span>
+            </div>
+            <div class="grand-total">
+              <span>TOTAL:</span>
+              <span>₱${total.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="footer">
+            <div class="thank-you">Thank you for your order!</div>
+            <div class="footer-text">Please come again</div>
+            <div class="footer-text">*** For school purposes only ***</div>
+          </div>
+        </div>
+        
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.focus();
+              window.print();
+              
+              setTimeout(function() {
+                window.close();
+              }, 1000);
+            }, 300);
+          };
+        <\/script>
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    resolve("Receipt printed successfully");
+  });
+}
+
+// Initialize when page loads
+document.addEventListener("DOMContentLoaded", () => {
+  initCategoryButtons();
+  renderMenu();
+  renderOrder();
+});
+</script>
+
+</body>
+</html>

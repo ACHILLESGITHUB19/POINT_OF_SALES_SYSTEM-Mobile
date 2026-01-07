@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>Register</title>
+</head>
+<body>
+<form action="/login" method="post">
+
+    <div class="login-border">
+        <div class="login-container">
+            <div class="logo-container">
+                <img src="/logo.png" alt="Logo" class="logo">
+            </div>
+
+          
+            <div class="gray-brandname">
+                G'ray Countryside Cafe est.2018
+            </div>
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+                <div class="error-message"><%= errorMessage %></div>
+            <% } %>
+
+            <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+                <div class="success-message"><%= successMessage %></div>
+            <% } %>
+            <h2>Login</h2>
+            <div class="input-container">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="input-type" name="user" required>
+            </div>
+            <div class="input-container password-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="input-type" name="pass" required>
+                    <span class="toggle-password" onclick="togglePassword()">
+                        <img src="/see.png" alt="Show password" id="eyeIcon">
+                    </span>
+                </div>
+            </div>
+            <div class="input-container">
+                <label for="role">Role</label>
+                <select name="role" id="role" required>
+                    <option value="staff">Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="button-container">
+                <button type="submit">Login</button>
+            </div>
+
+            <p class="register-text">
+                If you don't have an account? <a href="/register">Register</a>
+            </p>
+
+        </div>
+    </div>
+
+</form>
+<footer>
+    <h5>&copy; 2026 For School Purposes Only. All rights reserved.</h5>
+</footer>
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        eyeIcon.src = "/blind.png";
+        eyeIcon.alt = "Hide password";
+    } else {
+        passwordInput.type = "password";
+        eyeIcon.src = "/see.png";
+        eyeIcon.alt = "Show password";
+    }
+}
+</script>
+</body>
+</html>
